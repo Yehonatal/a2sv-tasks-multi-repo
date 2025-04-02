@@ -6,15 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Task 1 - Todo App</title>
-    <link rel="icon" href="../assets/checkicon.svg" type="image/x-icon">
+    <link rel="icon" href="./assets/check-icon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="../styles/common.css">
     <link rel="stylesheet" href="../styles/reset.css">
     <link rel="stylesheet" href="../styles/style.css">
 </head>
 
 <body>
-
-
-    <header class="header_container">
+    <header class="header">
         <div class="task_title">
             <h1>TODO LIST +</h1>
         </div>
@@ -25,26 +24,29 @@
 
     </header>
 
-    <main class="main_container">
-        <div class="task_create">
-            <div class="input_container">
-                <div class="input_container_header">
-                    <input id="taskTitle" type="text" id="taskInput" placeholder="Add a new task title...">
-                    <input type="date" id="taskDeadline" />
+    <main class="main">
+        <div class="task-create">
+            <div class="task-create__input-container">
+                <div class="task-create__input-header">
+                    <input class="task-create__input" id="taskTitle" type="text" placeholder="Add a new task title...">
+                    <input class="task-create__input" type="date" id="taskDeadline">
                 </div>
-                <textarea id="taskDescription" placeholder="Task Description"></textarea>
+                <textarea class="task-create__textarea" id="taskDescription" placeholder="Task Description"></textarea>
             </div>
-            <button id="addTaskButton">Add Task</button>
+            <button id="addTaskButton" class="task-create__button">Add Task</button>
         </div>
 
-        <div class="task_view">
-            <div id="taskList" class="task_list">
+        <div class="task-view">
+            <div id="taskList" class="task-list">
                 <!-- Task items will be dynamically added here -->
             </div>
-
+        </div>
     </main>
 
-    <script src="script.js"></script>
+    <!-- Toast notification element -->
+    <div id="toast" class="toast"></div>
+
+    <script type="module" src="script.js"></script>
 </body>
 
 </html>
