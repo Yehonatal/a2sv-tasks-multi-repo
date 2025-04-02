@@ -17,3 +17,15 @@ A simple Todo List application built with HTML, CSS, and JavaScript. This projec
   *Tasks can be permanently removed from the list as you can see on the previous image the modified task is removed*
 
 - **Local Storage:** Tasks are saved in the browser for persistent data.
+- **Notifications:** Display informative messages to the user using a toast notification system.
+- **Test Suite:** Includes a comprehensive test suite to ensure code quality and prevent regressions.
+
+## How to Run
+
+1.  Open the `index.html` file in your web browser.
+
+## How to Run Tests
+
+1.  Navigate to the project directory in your terminal.
+2.  Install the required packages by running `npm install` or `yarn install`.
+3.  Run the tests using `npm test` or `yarn test`.
