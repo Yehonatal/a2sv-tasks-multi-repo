@@ -4,15 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Task 2 - Todo App TS</title>
+    <link rel="icon" href="../assets/check-icon.svg" type="image/x-icon">
+
+    <link rel="stylesheet" href="../styles/common.css">
     <link rel="stylesheet" href="../styles/reset.css">
     <link rel="stylesheet" href="../styles/style.css">
 </head>
 
 <body>
+    <header class="header">
+        <div class="task_title">
+            <h1>TODO LIST +</h1>
+        </div>
 
+        <div class="task_number">
+            <h4>TASK - 1</h4>
+        </div>
 
-    <script src="./dist/script.js"></script>
+    </header>
+    <main class="main">
+        <div class="task-create">
+            <div class="task-create__input-container">
+                <div class="task-create__input-header">
+                    <input class="task-create__input" id="taskTitle" type="text" placeholder="Add a new task title...">
+                    <input class="task-create__input" type="date" id="taskDeadline">
+                </div>
+                <textarea class="task-create__textarea" id="taskDescription" placeholder="Task Description"></textarea>
+            </div>
+            <button type="submit" id="addTaskButton" class="task-create__button">Add Task</button>
+        </div>
+        <div class="task-view">
+            <div id="taskList" class="task-list">
+                <!-- Task items will be dynamically added here -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast notification element -->
+    <div id="toast" class="toast"></div>
+    <script type="module" src="./dist/script.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,4 @@
-const STORAGE_KEY = "tasks";
+const STORAGE_KEY = "tasks-JS";
 
 export function getTasks() {
     const tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
