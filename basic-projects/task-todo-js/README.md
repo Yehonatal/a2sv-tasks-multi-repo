@@ -5,16 +5,15 @@ A simple Todo List application built with HTML, CSS, and JavaScript. This projec
 ## Features
 
 - **Add Tasks:** Create new tasks with a title, description, and deadline.
-  ![Add Tasks](../assets/create_task.png) - *Users can input task details and add them to the list.*
-  ![View Tasks](../assets/multiple_tasks.png) - *Users can see the tasks in a grid*
+  ![Add Tasks](../assets/create_task.png) - _Users can input task details and add them to the list._
+  ![View Tasks](../assets/multiple_tasks.png) - _Users can see the tasks in a grid_
 - **Edit Tasks:** Update task details.
-  ![Edit Tasks](../assets/edit_task.png) - *Tasks can be modified after they have been created.*
-  ![Edited Tasks](../assets/after_edit_of_task.png) - *After the task is modified*
-  
+  ![Edit Tasks](../assets/edit_task.png) - _Tasks can be modified after they have been created._
+  ![Edited Tasks](../assets/after_edit_of_task.png) - _After the task is modified_
 - **Complete Tasks:** Mark tasks as completed.
-  ![Complete Tasks](../assets/complete_task.png) - *Visually distinguish completed tasks from pending ones.*
+  ![Complete Tasks](../assets/complete_task.png) - _Visually distinguish completed tasks from pending ones._
 - **Delete Tasks:** Remove tasks from the list.
-  *Tasks can be permanently removed from the list as you can see on the previous image the modified task is removed*
+  _Tasks can be permanently removed from the list as you can see on the previous image the modified task is removed_
 
 - **Local Storage:** Tasks are saved in the browser for persistent data.
 - **Notifications:** Display informative messages to the user using a toast notification system.
