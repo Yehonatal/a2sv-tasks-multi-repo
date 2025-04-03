@@ -13,7 +13,7 @@ export function renderTasks(tasks) {
         taskItem.innerHTML = `
       <div class="task-item__header">
         <h3 class="task-item__title">${task.title}</h3>
-        <span class="task-item__deadline">Deadline: ${task.deadline}</span>
+        <span class="task-item__deadline">${task.deadline}</span>
       </div>
       <p class="task-item__description">${task.description}</p>
       <div class="task-item__controls">
