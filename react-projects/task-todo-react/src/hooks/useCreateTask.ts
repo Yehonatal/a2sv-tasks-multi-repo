@@ -1,6 +1,10 @@
 import { TaskProps } from "../types/TaskProps";
 
-export function createTask(taskTitle: string, taskDescription: string, taskDeadline: string): TaskProps  {
+export function createTask(
+    taskTitle: string,
+    taskDescription: string,
+    taskDeadline: string
+): TaskProps {
     return {
         id: Date.now(),
         title: taskTitle,
@@ -8,4 +12,4 @@ export function createTask(taskTitle: string, taskDescription: string, taskDeadl
         deadline: taskDeadline,
         completed: false,
     };
-  }
+}

@@ -42,8 +42,8 @@
 
 /* Task completed state */
 .task--completed {
-    background-color: #4f4f4f; 
-    color: #ffcccb; 
+    background-color: #4f4f4f;
+    color: #ffcccb;
     font-style: italic;
 }
 
