@@ -4,4 +4,4 @@
 
 - [Task 2 - Todo App (HTML/CSS/TS + BEM)](https://yehonatal.github.io/a2sv-tasks-multi-repo/basic-projects/task-todo-ts/)
 
-- [Task 4 - Todo App (React + Typescript)](https://yehonatal.github.io/a2sv-tasks-multi-repo/react-projects/task-todo-react/)
+- [Task 4 - Todo App (React + Typescript)](https://task4-a2sv-todo.netlify.app/)
