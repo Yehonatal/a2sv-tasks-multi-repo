@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ContactFormSchema, contactFormSchema } from '../../types/formTypes';
+import Input from '../common/Input';
+import TextArea from '../common/TextArea';
 
 const ContactForm = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -49,61 +51,49 @@ const ContactForm = () => {
       </div>
       
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="form-group">
-          <label htmlFor="name" className="form-label">
-            Name <span className="required-mark">*</span>
-          </label>
-          <input
-            id="name"
-            type="text"
-            placeholder="Your name"
-            {...register('name')}
-            className={`form-control ${errors.name ? 'error' : ''}`}
-          />
-          {errors.name && <p className="error-message">{errors.name.message}</p>}
-        </div>
+        <Input
+          id="name"
+          label="Name"
+          type="text"
+          placeholder="Your name"
+          register={register}
+          name="name"
+          error={errors.name}
+          required={true}
+        />
         
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">
-            Email <span className="required-mark">*</span>
-          </label>
-          <input
-            id="email"
-            type="email"
-            placeholder="your.email@example.com"
-            {...register('email')}
-            className={`form-control ${errors.email ? 'error' : ''}`}
-          />
-          {errors.email && <p className="error-message">{errors.email.message}</p>}
-        </div>
+        <Input
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="your.email@example.com"
+          register={register}
+          name="email"
+          error={errors.email}
+          required={true}
+        />
         
-        <div className="form-group">
-          <label htmlFor="phone" className="form-label">
-            Phone <span className="required-mark">*</span>
-          </label>
-          <input
-            id="phone"
-            type="text"
-            placeholder="Your phone number"
-            {...register('phone')}
-            className={`form-control ${errors.phone ? 'error' : ''}`}
-          />
-          {errors.phone && <p className="error-message">{errors.phone.message}</p>}
-        </div>
+        <Input
+          id="phone"
+          label="Phone"
+          type="text"
+          placeholder="Your phone number"
+          register={register}
+          name="phone"
+          error={errors.phone}
+          required={true}
+        />
         
-        <div className="form-group">
-          <label htmlFor="message" className="form-label">
-            Message <span className="required-mark">*</span>
-          </label>
-          <textarea
-            id="message"
-            placeholder="Your message here..."
-            {...register('message')}
-            rows={5}
-            className={`form-control ${errors.message ? 'error' : ''}`}
-          />
-          {errors.message && <p className="error-message">{errors.message.message}</p>}
-        </div>
+        <TextArea
+          id="message"
+          label="Message"
+          placeholder="Your message here..."
+          register={register}
+          name="message"
+          error={errors.message}
+          required={true}
+          rows={5}
+        />
         
         <div style={{ marginTop: '1.5rem' }}>
           <button 
