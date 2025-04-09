@@ -7,4 +7,3 @@
 - [Task 4 - Todo App (React + Typescript)](https://task4-a2sv-todo.netlify.app/)
 
 - [Task 5 - React Hook Form + TypeScript + Vite + Tailwind](https://task5-react-hook-form.netlify.app/)
-]
