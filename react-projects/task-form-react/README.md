@@ -13,13 +13,13 @@ This project is a Contact Form implementation built with React Hook Form, TypeSc
 ## Screenshots
 
 ### Contact Form
-![Contact Form](/src/assets/initial_look.png)
+![Contact Form](./src/assets/initial_look.png)
 
 ### Form Validation
-![Form Validation](/src/assets/form_validation.png)
+![Form Validation](./src/assets/form_validation.png)
 
 ### Popup
-![From popup](/src/assets/pop_up.png)
+![From popup](./src/assets/pop_up.png)
 
 ## Getting Started
 
