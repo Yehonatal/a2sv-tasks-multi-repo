@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@layer base {
+    :root {
+        --background: #f9fafb;
+        --foreground: #111827;
+    }
+
+    body {
+        @apply bg-gray-50 text-gray-900;
+    }
+}
+
+@layer components {
+    .container {
+        @apply mx-auto px-4 sm:px-6 lg:px-8;
+    }
+}
