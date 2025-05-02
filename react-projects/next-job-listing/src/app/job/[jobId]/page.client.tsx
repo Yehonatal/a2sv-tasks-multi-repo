@@ -5,6 +5,8 @@ import { FiClock, FiMapPin, FiCalendar } from "react-icons/fi";
 import { useGetOpportunityByIdQuery } from "@/redux/services/opportunitiesApi";
 import { notFound } from "next/navigation";
 import { formatDate } from "@/hooks/useTimeFormat";
+import Loading from "./loading";
+import BookmarkButton from "@/components/BookmarkButton";
 
 const categoryColors = [
     { bg: "bg-orange-100", text: "text-orange-700" },
@@ -48,15 +50,11 @@ export default function JobPageClient({ jobId }: JobPageClientProps) {
     );
 
     if (isLoading) {
-        return (
-            <div className="flex justify-center items-center p-10">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
-            </div>
-        );
+        return <Loading />;
     }
 
     if (error) {
-        notFound()
+        notFound();
     }
 
     if (!data || !data.data) {
@@ -69,30 +67,33 @@ export default function JobPageClient({ jobId }: JobPageClientProps) {
         id: job.id,
         title: job.title,
         description: job.description,
-        responsibilities: typeof job.responsibilities === 'string' 
-            ? job.responsibilities.split('\n') 
-            : [],
+        responsibilities:
+            typeof job.responsibilities === "string"
+                ? job.responsibilities.split("\n")
+                : [],
         ideal_candidate: {
-            age: '',
-            gender: '',
-            traits: typeof job.idealCandidate === 'string' 
-                ? job.idealCandidate.split('\n') 
-                : []
+            age: "",
+            gender: "",
+            traits:
+                typeof job.idealCandidate === "string"
+                    ? job.idealCandidate.split("\n")
+                    : [],
         },
         when_where: job.whenAndWhere,
         about: {
             posted_on: formatDate(job.datePosted),
             deadline: formatDate(job.deadline),
-            location: Array.isArray(job.location) && job.location.length > 0 
-                ? job.location[0] 
-                : '',
+            location:
+                Array.isArray(job.location) && job.location.length > 0
+                    ? job.location[0]
+                    : "",
             start_date: formatDate(job.startDate),
             end_date: formatDate(job.endDate),
             categories: job.categories || [],
-            required_skills: job.requiredSkills || []
+            required_skills: job.requiredSkills || [],
         },
-        company: job.orgName || '',
-        image: job.logoUrl || ''
+        company: job.orgName || "",
+        image: job.logoUrl || "",
     };
 
     const tagBaseClass =
@@ -103,7 +104,17 @@ export default function JobPageClient({ jobId }: JobPageClientProps) {
         <div className="p-4 md:p-8 font-sans bg-white text-gray-800">
             <div className="flex flex-col md:flex-row gap-8 md:gap-12">
                 <div className="flex-1">
-                    <SectionTitle>Description</SectionTitle>
+                    <div className="flex justify-between items-center mb-4">
+                        <SectionTitle className="mb-0">
+                            Description
+                        </SectionTitle>
+                        <BookmarkButton
+                            jobId={mappedJob.id}
+                            isBookmarked={job.isBookmarked}
+                            size={24}
+                            className="mr-2"
+                        />
+                    </div>
                     <p className="text-gray-600 leading-relaxed mb-6">
                         {mappedJob.description}
                     </p>

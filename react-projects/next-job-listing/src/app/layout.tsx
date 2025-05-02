@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "@/redux/provider";
-import Link from "next/link";
+import NextAuthProvider from "@/providers/SessionProvider";
+import Header from "@/components/Header";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -26,9 +27,14 @@ export default function RootLayout({
                 suppressHydrationWarning
             >
                 <ReduxProvider>
-                    <main className="max-w-screen-xl mx-auto lg:p-8">
-                        {children}
-                    </main>
+                    <NextAuthProvider>
+                        <div className="flex flex-col min-h-screen">
+                            <Header />
+                            <main className="max-w-screen-xl mx-auto lg:p-8 flex-grow">
+                                {children}
+                            </main>
+                        </div>
+                    </NextAuthProvider>
                 </ReduxProvider>
             </body>
         </html>
