@@ -24,56 +24,62 @@ export default function JobListClient() {
     // Get jobs from the API response with proper type checking
     const jobs = useMemo(() => {
         if (!opportunitiesData) {
-            console.log('No opportunities data received');
+            console.log("No opportunities data received");
             return [];
         }
-        
-        console.log('Opportunities data received:', opportunitiesData);
-        
+
+        console.log("Opportunities data received:", opportunitiesData);
+
         // The API returns data in a different format than expected
         // The actual data is in opportunitiesData.data
         const jobsData = opportunitiesData.data;
-        
+
         if (!jobsData) {
-            console.log('No data property in opportunities data');
+            console.log("No data property in opportunities data");
             return [];
         }
-        
+
         // Ensure we have a valid array of jobs
         if (!Array.isArray(jobsData)) {
-            console.error("Expected jobs data to be an array, but got:", typeof jobsData);
+            console.error(
+                "Expected jobs data to be an array, but got:",
+                typeof jobsData
+            );
             return [];
         }
-        
+
         // Map the API response to match our Job type
-        return jobsData.map(job => ({
+        return jobsData.map((job) => ({
             id: job.id,
             title: job.title,
             description: job.description,
-            responsibilities: typeof job.responsibilities === 'string' 
-                ? job.responsibilities.split('\n') 
-                : [],
+            responsibilities:
+                typeof job.responsibilities === "string"
+                    ? job.responsibilities.split("\n")
+                    : [],
             ideal_candidate: {
-                age: '',
-                gender: '',
-                traits: typeof job.idealCandidate === 'string' 
-                    ? job.idealCandidate.split('\n') 
-                    : []
+                age: "",
+                gender: "",
+                traits:
+                    typeof job.idealCandidate === "string"
+                        ? job.idealCandidate.split("\n")
+                        : [],
             },
             when_where: job.whenAndWhere,
             about: {
                 posted_on: job.datePosted,
                 deadline: job.deadline,
-                location: Array.isArray(job.location) && job.location.length > 0 
-                    ? job.location[0] 
-                    : '',
+                location:
+                    Array.isArray(job.location) && job.location.length > 0
+                        ? job.location[0]
+                        : "",
                 start_date: job.startDate,
                 end_date: job.endDate,
                 categories: job.categories || [],
-                required_skills: job.requiredSkills || []
+                required_skills: job.requiredSkills || [],
             },
-            company: job.orgName || '',
-            image: job.logoUrl || ''
+            company: job.orgName || "",
+            image: job.logoUrl || "",
         }));
     }, [opportunitiesData]);
 
@@ -82,14 +88,16 @@ export default function JobListClient() {
         if (!jobs.length) return [];
 
         const validJobs = jobs.filter((job) => {
-            return Boolean(job && 
-                  (job.about?.posted_on || job.about?.deadline) && 
-                  job.title);
+            return Boolean(
+                job &&
+                    (job.about?.posted_on || job.about?.deadline) &&
+                    job.title
+            );
         });
 
         // Create a copy of the valid jobs to sort
         const list = [...validJobs];
-        
+
         // Sort based on the selected option
         return list.sort((a, b) => {
             try {
@@ -128,9 +136,6 @@ export default function JobListClient() {
     if (isLoading) {
         return (
             <div className="space-y-4 sm:space-y-6">
-                <div className="flex justify-between items-center mb-4">
-                    <p className="text-sm text-gray-600">Loading job listings...</p>
-                </div>
                 <LoadingJobCard />
                 <LoadingJobCard />
                 <LoadingJobCard />
@@ -148,7 +153,9 @@ export default function JobListClient() {
                             Error loading job listings
                         </p>
                         <p className="text-sm text-gray-600 max-w-md">
-                            {error instanceof Error ? error.message : "Please try again later."}
+                            {error instanceof Error
+                                ? error.message
+                                : "Please try again later."}
                         </p>
                         <button
                             onClick={handleRefresh}
@@ -170,9 +177,12 @@ export default function JobListClient() {
                 <div className="text-center py-12">
                     <div className="flex flex-col items-center gap-3">
                         <CgFileDocument className="w-12 h-12 text-gray-400" />
-                        <p className="text-lg font-medium text-gray-900">No job listings found</p>
+                        <p className="text-lg font-medium text-gray-900">
+                            No job listings found
+                        </p>
                         <p className="text-sm text-gray-600 max-w-md">
-                            There are currently no job listings that match your criteria.
+                            There are currently no job listings that match your
+                            criteria.
                         </p>
                         <button
                             onClick={handleRefresh}
@@ -197,18 +207,24 @@ export default function JobListClient() {
                         {sortedJobs.length === 1 ? "result" : "results"}
                     </p>
                     {isFetching && (
-                        <span className="text-xs text-blue-600">Refreshing...</span>
+                        <span className="text-xs text-blue-600">
+                            Refreshing...
+                        </span>
                     )}
                 </div>
-                <div className="flex  items-center gap-3">
-                        <button
-                            onClick={handleRefresh}
-                            className="text-blue-600  hover:text-blue-800 transition-colors"
-                            aria-label="Refresh listings"
-                            disabled={isFetching}
-                        >
-                            <MdRefresh className={`w-5 h-5 ${isFetching ? 'animate-spin' : ''}`} />
-                        </button>
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={handleRefresh}
+                        className="text-blue-600  hover:text-blue-800 transition-colors"
+                        aria-label="Refresh listings"
+                        disabled={isFetching}
+                    >
+                        <MdRefresh
+                            className={`w-5 h-5 ${
+                                isFetching ? "animate-spin" : ""
+                            }`}
+                        />
+                    </button>
                     <JobSorting
                         onSortChange={handleSortChange}
                         selectedOption={sortOption}
