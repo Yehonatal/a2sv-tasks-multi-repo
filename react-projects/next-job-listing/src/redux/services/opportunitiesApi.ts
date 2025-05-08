@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Job, JobPosting, JobPostById } from "@/lib/type";
+import { getUserToken, DEMO_TOKEN } from "@/utils/auth";
 
 // Define response types for bookmarks
 interface BookmarksResponse {
@@ -17,9 +18,17 @@ export const opportunitiesApi = createApi({
     reducerPath: "opportunitiesApi",
     baseQuery: fetchBaseQuery({
         baseUrl: "https://akil-backend.onrender.com",
-        prepareHeaders: (headers) => {
-            // Always add the authorization header for the demo app
-            headers.set("Authorization", "Bearer demo-token");
+        prepareHeaders: (headers, { getState }) => {
+            // Get token from our auth utility
+            const token = getUserToken();
+
+            // If we have a token, use it
+            if (token) {
+                headers.set("Authorization", `Bearer ${token}`);
+            } else {
+                // Fallback to demo token
+                headers.set("Authorization", `Bearer ${DEMO_TOKEN}`);
+            }
             return headers;
         },
     }),
@@ -45,10 +54,6 @@ export const opportunitiesApi = createApi({
         getBookmarks: builder.query<BookmarksResponse, void>({
             query: () => ({
                 url: "/bookmarks",
-                headers: {
-                    Authorization: "Bearer demo-token",
-                    "Content-Type": "application/json",
-                },
             }),
             providesTags: ["Bookmark"],
         }),
@@ -58,10 +63,6 @@ export const opportunitiesApi = createApi({
                 url: `/bookmarks/${eventId}`,
                 method: "POST",
                 body: {},
-                headers: {
-                    Authorization: "Bearer demo-token",
-                    "Content-Type": "application/json",
-                },
             }),
             invalidatesTags: ["Bookmark", "Opportunity"],
         }),
@@ -70,10 +71,6 @@ export const opportunitiesApi = createApi({
             query: (eventId) => ({
                 url: `/bookmarks/${eventId}`,
                 method: "DELETE",
-                headers: {
-                    Authorization: "Bearer demo-token",
-                    "Content-Type": "application/json",
-                },
             }),
             invalidatesTags: ["Bookmark", "Opportunity"],
         }),

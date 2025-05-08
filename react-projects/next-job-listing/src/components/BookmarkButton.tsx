@@ -3,11 +3,8 @@
 import { useState, useEffect } from "react";
 import { BsBookmark, BsBookmarkFill } from "react-icons/bs";
 import { signIn, useSession } from "next-auth/react";
-import {
-    useCreateBookmarkMutation,
-    useDeleteBookmarkMutation,
-    useGetBookmarksQuery,
-} from "@/redux/services/opportunitiesApi";
+import { BookmarkCrud } from "@/utils/bookmarkApi"; // Removed getBookmarks
+import { useGetBookmarksQuery } from "@/redux/services/opportunitiesApi"; // Added Redux hook
 
 interface BookmarkButtonProps {
     jobId: string | number;
@@ -24,27 +21,35 @@ const BookmarkButton = ({
 }: BookmarkButtonProps) => {
     const { data: session, status } = useSession();
     const isAuthenticated = status === "authenticated";
-    const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
+    const [currentIsBookmarked, setCurrentIsBookmarked] = useState(initialIsBookmarked);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // RTK Query hooks for bookmark operations
-    const [createBookmark, { isLoading: isCreating }] =
-        useCreateBookmarkMutation();
-    const [deleteBookmark, { isLoading: isDeleting }] =
-        useDeleteBookmarkMutation();
-    const { data: bookmarksData, refetch } = useGetBookmarksQuery(undefined, {
-        skip: !isAuthenticated,
-        refetchOnMountOrArgChange: true,
+    // Get the access token from the session
+    const accessToken =
+        session?.user?.accessToken || session?.user?.data?.accessToken;
+
+    // Get global bookmarks data from Redux store
+    const { data: bookmarksData, isLoading: isLoadingBookmarks } = useGetBookmarksQuery(undefined, {
+        skip: !isAuthenticated, // Skip query if not authenticated
     });
 
-    // Check if job is bookmarked when bookmarks data changes
     useEffect(() => {
-        if (bookmarksData?.data) {
-            const isJobBookmarked = bookmarksData.data.some(
-                (bookmark: any) => bookmark.opportunityId === jobId.toString()
+        if (isAuthenticated && bookmarksData) {
+            const isJobInGlobalBookmarks = bookmarksData.data.some(
+                (bookmark: any) => bookmark.eventID === jobId.toString()
             );
-            setIsBookmarked(isJobBookmarked);
+            setCurrentIsBookmarked(isJobInGlobalBookmarks);
+        } else if (!isAuthenticated) {
+            setCurrentIsBookmarked(false); // Not bookmarked if not logged in
         }
-    }, [bookmarksData, jobId]);
+        // If !bookmarksData but initialIsBookmarked is true (from SSR or parent), trust it initially.
+        // The above will correct it once bookmarksData loads.
+    }, [isAuthenticated, bookmarksData, jobId, initialIsBookmarked]);
+
+    // Synchronize with initialIsBookmarked prop if it changes from parent
+    useEffect(() => {
+        setCurrentIsBookmarked(initialIsBookmarked);
+    }, [initialIsBookmarked]);
 
     // Handle bookmark toggle
     const handleToggleBookmark = async (e: React.MouseEvent) => {
@@ -58,40 +63,40 @@ const BookmarkButton = ({
             );
             if (confirmLogin) {
                 signIn("credentials", {
-                    username: "user",
-                    password: "password",
                     callbackUrl: window.location.href,
                 });
             }
             return;
         }
 
+        if (!accessToken) {
+            return;
+        }
+
+        setIsLoading(true);
         try {
             // Toggle bookmark state immediately for better UX
-            const newState = !isBookmarked;
-            setIsBookmarked(newState);
+            const newState = !currentIsBookmarked;
+            setCurrentIsBookmarked(newState);
 
-            // Call the appropriate API based on the new state
-            if (!newState) {
-                // If we're removing a bookmark
-                await deleteBookmark(jobId.toString());
-            } else {
-                // If we're adding a bookmark
-                await createBookmark(jobId.toString());
+            // Call the bookmark utility function
+            const success = await BookmarkCrud(
+                jobId.toString(),
+                accessToken,
+                currentIsBookmarked // Pass the state *before* toggle
+            );
+
+            if (!success) {
+                // If the operation failed, revert the UI state
+                setCurrentIsBookmarked(!newState);
             }
-
-            // Refetch bookmarks to update the bookmarks page if it's open
-            refetch().catch((err) => {
-                console.error("Error refetching bookmarks:", err);
-            });
         } catch (error) {
-            console.error("Error toggling bookmark:", error);
             // Revert to previous state if there was an error
-            setIsBookmarked(!isBookmarked);
+            setCurrentIsBookmarked(!currentIsBookmarked);
+        } finally {
+            setIsLoading(false);
         }
     };
-
-    const isLoading = isCreating || isDeleting;
 
     return (
         <button
@@ -99,10 +104,10 @@ const BookmarkButton = ({
             disabled={isLoading}
             className={`transition-colors duration-200 ${className}`}
             aria-label={
-                isBookmarked ? "Remove from bookmarks" : "Add to bookmarks"
+                currentIsBookmarked ? "Remove from bookmarks" : "Add to bookmarks"
             }
         >
-            {isBookmarked ? (
+            {currentIsBookmarked ? (
                 <BsBookmarkFill size={size} className="text-blue-600" />
             ) : (
                 <BsBookmark

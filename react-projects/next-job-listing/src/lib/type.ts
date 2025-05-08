@@ -18,8 +18,8 @@ export interface JobPostById {
 
 export interface Job {
   id: number | string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   responsibilities: string[];
   ideal_candidate: {
     age: string;
@@ -27,7 +27,7 @@ export interface Job {
     traits: string[];
   };
   when_where: string;
-  about: {
+  about?: {
     posted_on: string;
     deadline: string;
     location: string;
@@ -36,14 +36,15 @@ export interface Job {
     categories: string[];
     required_skills: string[];
   };
-  company: string;
-  image: string;
+  company?: string;
+  image?: string;
+  isBookmarked: boolean;
 }
 
 export interface JobFromAPI {
   id: string;
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   responsibilities: string;
   requirements: string;
   idealCandidate: string;

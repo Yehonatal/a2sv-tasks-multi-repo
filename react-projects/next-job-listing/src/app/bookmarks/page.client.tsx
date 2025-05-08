@@ -1,36 +1,201 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useGetBookmarksQuery } from "@/redux/services/opportunitiesApi";
 import JobCard from "@/components/JobCard";
 import LoadingJobCard from "@/components/LoadingJobCard";
 import { BsBookmarkFill } from "react-icons/bs";
 import { Job } from "@/lib/type";
+import { getBookmarks } from "@/utils/bookmarkApi";
 
 export default function BookmarksClient() {
     const { data: session, status } = useSession();
     const router = useRouter();
     const isAuthenticated = status === "authenticated";
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
+    const [bookmarkedJobs, setBookmarkedJobs] = useState<Job[]>([]);
 
+    // Get the access token from the session
+    const accessToken =
+        session?.user?.accessToken || session?.user?.data?.accessToken;
+    // Redirect unauthenticated users
     useEffect(() => {
         if (status === "unauthenticated") {
             router.push("/");
-        } else if (status === "authenticated") {
-            console.log("User is authenticated in bookmarks page:", session);
         }
-    }, [status, router, session]);
+    }, [status, router]);
 
-    // Fetch bookmarks
-    const {
-        data: bookmarksData,
-        isLoading,
-        isError,
-        error,
-    } = useGetBookmarksQuery(undefined, {
-        skip: !isAuthenticated,
-    });
+    // Fetch bookmarks when authenticated
+    useEffect(() => {
+        const fetchBookmarks = async () => {
+            if (!isAuthenticated || !accessToken) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+                const bookmarks = await getBookmarks(accessToken);
+
+                if (Array.isArray(bookmarks) && bookmarks.length > 0) {
+                    const jobDetailsPromises = bookmarks.map(
+                        async (bookmark: any) => {
+                            if (bookmark && bookmark.eventID) {
+                                try {
+                                    const res = await fetch(
+                                        `https://akil-backend.onrender.com/opportunities/${bookmark.eventID}`,
+                                        {
+                                            headers: {
+                                                Authorization: `Bearer ${accessToken}`,
+                                                "Content-Type":
+                                                    "application/json",
+                                            },
+                                        }
+                                    );
+                                    if (!res.ok) {
+                                        return null; // Skip this job if details can't be fetched
+                                    }
+                                    const opportunityData = await res.json();
+                                    const opportunity = opportunityData.data;
+
+                                    if (opportunity) {
+                                        return {
+                                            id:
+                                                opportunity.id ||
+                                                bookmark.eventID, // Fallback to eventID if opportunity.id is missing
+                                            title:
+                                                opportunity.title ||
+                                                "Untitled Job",
+                                            description:
+                                                opportunity.description ||
+                                                "No description available",
+                                            responsibilities:
+                                                typeof opportunity.responsibilities ===
+                                                "string"
+                                                    ? opportunity.responsibilities.split(
+                                                          "\\n"
+                                                      )
+                                                    : Array.isArray(
+                                                          opportunity.responsibilities
+                                                      )
+                                                    ? opportunity.responsibilities
+                                                    : [],
+                                            ideal_candidate: {
+                                                age:
+                                                    opportunity.idealCandidate
+                                                        ?.age || "", // Assuming idealCandidate might be an object
+                                                gender:
+                                                    opportunity.idealCandidate
+                                                        ?.gender || "",
+                                                traits:
+                                                    typeof opportunity.idealCandidate ===
+                                                    "string"
+                                                        ? opportunity.idealCandidate.split(
+                                                              "\\n"
+                                                          )
+                                                        : Array.isArray(
+                                                              opportunity
+                                                                  .idealCandidate
+                                                                  ?.traits
+                                                          )
+                                                        ? opportunity
+                                                              .idealCandidate
+                                                              .traits
+                                                        : [],
+                                            },
+                                            when_where:
+                                                opportunity.whenAndWhere || "",
+                                            about: {
+                                                posted_on:
+                                                    opportunity.datePosted ||
+                                                    bookmark.datePosted ||
+                                                    "",
+                                                deadline:
+                                                    opportunity.deadline || "",
+                                                location:
+                                                    Array.isArray(
+                                                        opportunity.location
+                                                    ) &&
+                                                    opportunity.location
+                                                        .length > 0
+                                                        ? opportunity.location.join(
+                                                              ", "
+                                                          ) // Join if it's an array
+                                                        : typeof opportunity.location ===
+                                                          "string"
+                                                        ? opportunity.location
+                                                        : bookmark.location ||
+                                                          "",
+                                                start_date:
+                                                    opportunity.startDate || "",
+                                                end_date:
+                                                    opportunity.endDate || "",
+                                                categories:
+                                                    opportunity.categories ||
+                                                    [],
+                                                required_skills:
+                                                    opportunity.requiredSkills ||
+                                                    [],
+                                            },
+                                            company:
+                                                opportunity.orgName ||
+                                                bookmark.orgName ||
+                                                "",
+                                            image:
+                                                opportunity.logoUrl ||
+                                                bookmark.logoUrl ||
+                                                "/job1.png",
+                                            isBookmarked: true,
+                                        };
+                                    }
+                                } catch (err) {
+                                    return null; // Skip on error
+                                }
+                            }
+                            return null;
+                        }
+                    );
+
+                    const resolvedJobsDetails = await Promise.all(
+                        jobDetailsPromises
+                    );
+                    const validJobs = resolvedJobsDetails.filter(
+                        (job) => job !== null
+                    ) as Job[];
+
+                    const uniqueJobsMap = new Map<string, Job>();
+                    validJobs.forEach((job) => {
+                        if (job && typeof job.id === "string") {
+                            if (!uniqueJobsMap.has(job.id)) {
+                                uniqueJobsMap.set(job.id, job);
+                            }
+                        } else if (job && typeof job.id === "number") {
+                            const stringId = job.id.toString();
+                            if (!uniqueJobsMap.has(stringId)) {
+                                uniqueJobsMap.set(stringId, job);
+                            }
+                        }
+                    });
+                    const deDuplicatedJobs = Array.from(uniqueJobsMap.values());
+
+                    setBookmarkedJobs(deDuplicatedJobs);
+                    setIsError(false);
+                } else {
+                    setBookmarkedJobs([]);
+                    setIsError(false);
+                }
+            } catch (error) {
+                console.error("Error fetching bookmarks:", error);
+                setIsError(true);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBookmarks();
+    }, [isAuthenticated, accessToken]);
 
     if (isLoading) {
         return (
@@ -50,8 +215,6 @@ export default function BookmarksClient() {
 
     // Handle error state
     if (isError) {
-        console.error("Error loading bookmarks:", error);
-
         return (
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
                 <h1 className="text-2xl sm:text-3xl md:text-[32px] font-bold text-gray-900 mb-4 sm:mb-6 flex items-center gap-2">
@@ -60,12 +223,23 @@ export default function BookmarksClient() {
                 </h1>
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
                     <p className="font-semibold">
-                        Error loading bookmarks. Please try again later.
+                        Error loading bookmarks. This might be due to an
+                        authentication issue.
+                    </p>
+                    <p className="mt-2">
+                        Please try logging out and logging back in, then refresh
+                        this page.
                     </p>
                     <div className="flex gap-2 mt-4">
                         <button
-                            onClick={() => router.push("/")}
+                            onClick={() => window.location.reload()}
                             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                        >
+                            Refresh Page
+                        </button>
+                        <button
+                            onClick={() => router.push("/")}
+                            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
                         >
                             Back to Jobs
                         </button>
@@ -73,62 +247,6 @@ export default function BookmarksClient() {
                 </div>
             </div>
         );
-    }
-
-    // Map API bookmarks to Job objects with error handling
-    const bookmarkedJobs: Job[] = [];
-
-    try {
-        // Check if bookmarksData exists and has data property
-        if (bookmarksData?.data && Array.isArray(bookmarksData.data)) {
-            // Map each bookmark to a Job object
-            bookmarksData.data.forEach((bookmark: any) => {
-                // Check if bookmark has opportunity property
-                if (bookmark && bookmark.opportunity) {
-                    const opportunity = bookmark.opportunity;
-
-                    bookmarkedJobs.push({
-                        id: opportunity.id || "unknown",
-                        title: opportunity.title || "Untitled Job",
-                        description:
-                            opportunity.description ||
-                            "No description available",
-                        responsibilities:
-                            typeof opportunity.responsibilities === "string"
-                                ? opportunity.responsibilities.split("\n")
-                                : [],
-                        ideal_candidate: {
-                            age: "",
-                            gender: "",
-                            traits:
-                                typeof opportunity.idealCandidate === "string"
-                                    ? opportunity.idealCandidate.split("\n")
-                                    : [],
-                        },
-                        when_where: opportunity.whenAndWhere || "",
-                        about: {
-                            posted_on: opportunity.datePosted || "",
-                            deadline: opportunity.deadline || "",
-                            location:
-                                Array.isArray(opportunity.location) &&
-                                opportunity.location.length > 0
-                                    ? opportunity.location[0]
-                                    : "",
-                            start_date: opportunity.startDate || "",
-                            end_date: opportunity.endDate || "",
-                            categories: opportunity.categories || [],
-                            required_skills: opportunity.requiredSkills || [],
-                        },
-                        company: opportunity.orgName || "",
-                        image: opportunity.logoUrl || "/job1.png",
-                    });
-                }
-            });
-        }
-    } catch (err) {
-        console.error("Error processing bookmarks data:", err);
-        // If there's an error processing the data, we'll return an empty array
-        // which will trigger the empty state UI
     }
 
     // Handle empty state

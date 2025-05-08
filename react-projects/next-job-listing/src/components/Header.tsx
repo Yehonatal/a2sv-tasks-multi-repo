@@ -2,25 +2,20 @@
 
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { BsBookmarkFill, BsGoogle } from "react-icons/bs";
+import { BsBookmarkFill } from "react-icons/bs";
 
 export default function Header() {
     const { data: session, status } = useSession();
     const isAuthenticated = status === "authenticated";
 
-    const handleGoogleLogin = () => {
-        signIn("google", { callbackUrl: window.location.href });
-    };
-
     const handleCredentialsLogin = () => {
         signIn("credentials", {
-            username: "user",
-            password: "password",
             callbackUrl: window.location.href,
         });
     };
 
     const handleLogout = () => {
+        // Just sign out - NextAuth will handle the session cleanup
         signOut({ callbackUrl: "/" });
     };
 
@@ -72,14 +67,6 @@ export default function Header() {
                                 className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors"
                             >
                                 Demo Login
-                            </button>
-                            <button
-                                onClick={handleGoogleLogin}
-                                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 transition-colors flex items-center gap-2"
-                                title="Note: Requires proper Google OAuth setup in .env.local"
-                            >
-                                <BsGoogle />
-                                <span className="hidden sm:inline">Google</span>
                             </button>
                         </div>
                     )}

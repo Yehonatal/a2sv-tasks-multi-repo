@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "@/redux/provider";
 import NextAuthProvider from "@/providers/SessionProvider";
 import Header from "@/components/Header";
-
-const inter = Inter({
-    subsets: ["latin"],
-    display: "swap",
-});
 
 export const metadata: Metadata = {
     title: "Job Listings",
@@ -23,7 +17,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body
-                className={`${inter.className} bg-gray-50 min-h-screen`}
+                className={`bg-gray-50 min-h-screen`}
                 suppressHydrationWarning
             >
                 <ReduxProvider>

@@ -1,0 +1,12 @@
+{
+  "data": [
+    {
+      "eventID": "job-1",
+      "title": "Senior Software Engineer",
+      "orgName": "Innovatech Solutions",
+      "logoUrl": "/placeholder-logo1.png"
+    }
+  ],
+  "success": true,
+  "message": "Successfully fetched bookmarks with one item"
+}

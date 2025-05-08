@@ -1,15 +1,16 @@
-# Task 7 Job Listing Application 
+# Task 6 - 7 - Final Task (Job Listing Application)
 
 A simple job listing application built with Next.js, TypeScript, and Tailwind CSS. This application allows users to browse job listings, view detailed job information, and filter jobs based on various criteria.
 
 ## Features
-
+- **User Authentication**: Secure login and registration with credentials
 - **Job Listings Dashboard**: Browse all available job opportunities with a clean, card-based UI
 - **Job Bookmarking** : Bookmark job you are interested in
 - **Detailed Job View**: View comprehensive information about each job including responsibilities, requirements, and company details
 - **Responsive Design**: Fully responsive layout that works on desktop and mobile devices
 - **Tag-based Filtering**: Jobs are categorized with tags for easy filtering
 - **Modern UI**: Clean, professional interface with attention to detail
+- **Testing**: Jest and Cypres for testing
 
 ## Screenshots
 
@@ -26,7 +27,7 @@ A simple job listing application built with Next.js, TypeScript, and Tailwind CS
 ![Job Details Page](public/jobdetailpage.png)
 
 ### Bookmark Page
-![Bookmarked Jobs](public/bookmarkpage.png)
+![Bookmarked Jobs](public/jobsaved.png)
 
 ## Technologies Used
 

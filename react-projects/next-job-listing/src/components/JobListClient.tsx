@@ -24,18 +24,14 @@ export default function JobListClient() {
     // Get jobs from the API response with proper type checking
     const jobs = useMemo(() => {
         if (!opportunitiesData) {
-            console.log("No opportunities data received");
             return [];
         }
-
-        console.log("Opportunities data received:", opportunitiesData);
 
         // The API returns data in a different format than expected
         // The actual data is in opportunitiesData.data
         const jobsData = opportunitiesData.data;
 
         if (!jobsData) {
-            console.log("No data property in opportunities data");
             return [];
         }
 
@@ -80,6 +76,7 @@ export default function JobListClient() {
             },
             company: job.orgName || "",
             image: job.logoUrl || "",
+            isBookmarked: job.isBookmarked, // Add this line
         }));
     }, [opportunitiesData]);
 

@@ -26,7 +26,7 @@ const JobCard = ({ job }: JobCardProps) => {
     const categories = job.about?.categories || [];
 
     return (
-        <div className="relative">
+        <div className="relative" data-testid={`job-card-${job.id}`}>
             <Link href={`/job/${job.id}`} className="block">
                 <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-row gap-3 sm:gap-5">
                     <Image
@@ -67,7 +67,7 @@ const JobCard = ({ job }: JobCardProps) => {
                                     .slice(0, 2)
                                     .map((category, index) => (
                                         <span
-                                            key={index}
+                                            key={`${category}-${index}`}
                                             className={`px-3 sm:px-4 py-1 rounded-full text-xs font-medium ${getCategoryTagStyle(
                                                 index
                                             )}`}
@@ -82,7 +82,10 @@ const JobCard = ({ job }: JobCardProps) => {
             </Link>
             {/* Bookmark button positioned absolutely in the top-right corner */}
             <div className="absolute top-4 right-4 sm:top-6 sm:right-6 z-10">
-                <BookmarkButton jobId={job.id} />
+                <BookmarkButton
+                    jobId={job.id}
+                    isBookmarked={job.isBookmarked}
+                />
             </div>
         </div>
     );
